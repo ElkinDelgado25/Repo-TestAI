@@ -67,7 +67,8 @@ ambos estilos sin una razón concreta.
   igualdad y comportamiento de value object. No crear implementaciones
   manuales de value objects, ni bases propias para ellos.
 - La clase base `Entity<TId>` contiene únicamente el identificador genérico
-  reutilizable. Los campos específicos de negocio pertenecen a cada entidad.
+  reutilizable y la igualdad basada en tipo e identificador. Los campos
+  específicos de negocio pertenecen a cada entidad.
 - No incluir dependencias de ASP.NET Core, Entity Framework Core, MediatR,
   serialización, HTTP, base de datos ni servicios externos.
 - No exponer DTOs, modelos de request/response ni tipos de persistencia.
@@ -145,6 +146,13 @@ Application/Features/Products/Commands/CreateProduct/
   constructores o implementaciones manuales de igualdad.
 - Las entidades reciben y exponen tipos de valor del dominio, nunca los tipos
   primitivos que representan.
+- Los value objects que se persistan mediante EF Core deben incluir
+  `Conversions.EfCoreValueConverter` junto con `Conversions.Default` en el
+  atributo `ValueObject`. El adaptador de datos usará el convertidor generado
+  mediante `HasConversion` cuando configure la propiedad.
+- Los analizadores de Vogen deben permanecer habilitados. `dotnet build` es la
+  verificación automática mínima: el analizador impide constructores manuales,
+  valores `default` e inicializaciones con `new` fuera del tipo Vogen.
 
 ## Criterio de revisión
 
@@ -166,3 +174,29 @@ Antes de dar por terminado un cambio, comprobar:
   reutilizable.
 - Sus campos de dominio son `UsuarioId`, `Nombre`, `Apellido` y `Email`; los
   cuatro se declaran con Vogen en `Api/Domain/ValueObjects`.
+- `Email` normaliza la entrada (elimina espacios laterales y convierte a
+  minúsculas), valida una estructura básica de correo y genera el convertidor
+  para EF Core.
+- Se incorporó `Microsoft.EntityFrameworkCore` 10.0.10. Aún no se define un
+  proveedor ni un `DbContext`; esas decisiones pertenecen a
+  `Infrastructure/Data` cuando se elija la base de datos.
+
+### Usuarios, SQL Server y semillas (2026-07-21)
+
+- Los endpoints `POST /api/usuarios` y `GET /api/usuarios/{id}` traducen los
+  contratos HTTP a los mensajes de MediatR y devuelven `201 Created`, `200 OK`
+  o `404 Not Found` según corresponda. Los datos inválidos y correos duplicados
+  devuelven `400` y `409`, respectivamente.
+- Los features `RegistrarUsuario` y `ObtenerUsuario` residen en
+  `Application/Features/Usuarios`, implementan Command/Query con MediatR y se
+  validan mediante FluentValidation en un pipeline behavior.
+- `IApplicationDbContext` es el contrato de persistencia que consumen los
+  features. `Infrastructure/Data/ApiDbContext` lo implementa con EF Core y
+  mantiene la configuración y las semillas fuera de Application.
+- Los value objects usan los convertidores EF Core generados por Vogen.
+- Aspire 13.4 administra el SQL Server persistente `dbserver` y la base `bd`.
+  El AppHost entrega su cadena de conexión a la API mediante `WithReference`.
+- Al iniciar la API se crea el esquema para desarrollo con `EnsureCreatedAsync`
+  y, únicamente cuando la tabla está vacía, Bogus inserta 25 usuarios ficticios
+  de forma reproducible. Al incorporar migraciones se debe sustituir
+  `EnsureCreatedAsync` por `MigrateAsync`.

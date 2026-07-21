@@ -2,5 +2,5 @@ using Vogen;
 
 namespace Api.Domain.ValueObjects;
 
-[ValueObject<string>]
+[ValueObject<string>(conversions: Conversions.Default | Conversions.EfCoreValueConverter)]
 public partial struct Apellido;
