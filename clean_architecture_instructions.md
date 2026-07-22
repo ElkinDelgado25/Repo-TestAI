@@ -19,14 +19,13 @@ ApiDbContext (EF Core) ──── SQL Server "bd" (Aspire)
 
 ```text
 Application/Features/Usuarios/
-├── Commands/RegistrarUsuario/RegistrarUsuario.cs
-│   ├── Request + Command + DTO + mapeo
-│   ├── Validator + Handler
-│   └── RegistrarUsuarioController       POST /api/usuarios
-└── Queries/ObtenerUsuarios/ObtenerUsuarios.cs
-    ├── Query paginada + DTO + mapeo
-    ├── Validator + Handler
-    └── ObtenerUsuariosController        GET /api/usuarios
+├── Commands/
+│   ├── RegistrarUsuario/RegistrarUsuario.cs      POST /api/usuarios
+│   ├── ActualizarUsuario/ActualizarUsuario.cs    PUT /api/usuarios/{id}
+│   └── EliminarUsuario/EliminarUsuario.cs        DELETE /api/usuarios/{id}
+└── Queries/
+    ├── ObtenerUsuarios/ObtenerUsuarios.cs        GET /api/usuarios
+    └── ObtenerUsuarioPorId/ObtenerUsuarioPorId.cs GET /api/usuarios/{id}
 ```
 
 ## Infraestructura
@@ -55,5 +54,5 @@ Api.Tests/
 └── Queries/ObtenerUsuarios/           Tests de queries y controlador
 ```
 
-La suite valida casos normales y límite de comandos, paginación, controlador y
-la consulta de usuario por identificador.
+La suite valida casos normales y límite de comandos, paginación, controlador,
+consulta por identificador, actualización y eliminación lógica.

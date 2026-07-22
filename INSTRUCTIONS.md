@@ -96,6 +96,12 @@ controladores sin una razón concreta: este proyecto utiliza controladores.
 - `GET /api/usuarios/{id}`: obtiene un usuario por identificador; devuelve
   `200 OK`, `404 Not Found` si no existe o `400 Bad Request` si el identificador
   no es válido.
+- `PUT /api/usuarios/{id}`: actualiza nombre, apellido y correo de un usuario
+  activo; devuelve `200 OK`, `404 Not Found` o `409 Conflict` si el correo ya
+  pertenece a otro usuario.
+- `DELETE /api/usuarios/{id}`: realiza eliminación lógica y devuelve
+  `204 No Content`; el registro permanece en la base con `EstaEliminado = true`
+  y deja de aparecer en las consultas normales.
 - La entrada inválida devuelve `400 Bad Request` y un correo repetido devuelve
   `409 Conflict`.
 - Ambos controladores se descubren mediante `app.MapControllers()`.
@@ -106,6 +112,8 @@ controladores sin una razón concreta: este proyecto utiliza controladores.
   entorno es `Development`.
 - Crea el esquema con `EnsureCreatedAsync()` y, si no hay usuarios, usa Bogus en
   español para insertar 25 registros reproducibles.
+- Para entornos de desarrollo ya creados, agrega de forma idempotente las
+  columnas de eliminación lógica (`EstaEliminado` y `EliminadoEn`).
 - Cuando se incorporen migraciones, sustituir `EnsureCreatedAsync()` por
   `MigrateAsync()`.
 
@@ -135,4 +143,5 @@ Antes de terminar un cambio comprobar:
   normalización de correo, nombre vacío, correo duplicado, lista paginada,
   colección vacía, página fuera de rango, parámetros inválidos y respuestas
   `200 OK` y `400 Bad Request` del controlador; además cubre búsqueda de
-  usuario por identificador existente, inexistente e inválido.
+  usuario por identificador existente, inexistente e inválido, actualización,
+  correo repetido durante actualización y eliminación lógica.
