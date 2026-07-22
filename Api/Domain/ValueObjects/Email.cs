@@ -15,7 +15,8 @@ public partial struct Email
         var posicionArroba = input.IndexOf('@');
         var dominio = posicionArroba >= 0 ? input[(posicionArroba + 1)..] : string.Empty;
 
-        var esValido = !string.IsNullOrWhiteSpace(input)
+        var esValido =
+            !string.IsNullOrWhiteSpace(input)
             && !input.Any(char.IsWhiteSpace)
             && posicionArroba > 0
             && posicionArroba == input.LastIndexOf('@')

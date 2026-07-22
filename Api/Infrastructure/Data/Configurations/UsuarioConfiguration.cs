@@ -13,26 +13,38 @@ public sealed class UsuarioConfiguration : IEntityTypeConfiguration<Usuario>
 
         builder.HasKey(usuario => usuario.Id);
 
-        builder.Property(usuario => usuario.Id)
+        builder
+            .Property(usuario => usuario.Id)
             .HasConversion(new UsuarioId.EfCoreValueConverter())
             .ValueGeneratedNever();
 
-        builder.Property(usuario => usuario.Nombre)
+        builder
+            .Property(usuario => usuario.Nombre)
             .HasConversion(new Nombre.EfCoreValueConverter())
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(usuario => usuario.Apellido)
+        builder
+            .Property(usuario => usuario.Apellido)
             .HasConversion(new Apellido.EfCoreValueConverter())
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(usuario => usuario.Email)
+        builder
+            .Property(usuario => usuario.Email)
             .HasConversion(new Email.EfCoreValueConverter())
             .HasMaxLength(254)
             .IsRequired();
 
-        builder.HasIndex(usuario => usuario.Email)
-            .IsUnique();
+        builder
+            .Property(usuario => usuario.EstaEliminado)
+            .HasDefaultValue(false)
+            .IsRequired();
+
+        builder
+            .Property(usuario => usuario.EliminadoEn);
+
+        builder.HasIndex(usuario => usuario.Email).IsUnique();
+        builder.HasQueryFilter(usuario => !usuario.EstaEliminado);
     }
 }

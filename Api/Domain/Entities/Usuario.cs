@@ -13,9 +13,36 @@ public sealed class Usuario : Entity<UsuarioId>
         Email = email;
     }
 
-    public Nombre Nombre { get; }
+    public Nombre Nombre { get; private set; }
 
-    public Apellido Apellido { get; }
+    public Apellido Apellido { get; private set; }
 
-    public Email Email { get; }
+    public Email Email { get; private set; }
+
+    public bool EstaEliminado { get; private set; }
+
+    public DateTimeOffset? EliminadoEn { get; private set; }
+
+    public void Actualizar(Nombre nombre, Apellido apellido, Email email)
+    {
+        if (EstaEliminado)
+        {
+            throw new InvalidOperationException("No se puede actualizar un usuario eliminado.");
+        }
+
+        Nombre = nombre;
+        Apellido = apellido;
+        Email = email;
+    }
+
+    public void Eliminar(DateTimeOffset eliminadoEn)
+    {
+        if (EstaEliminado)
+        {
+            return;
+        }
+
+        EstaEliminado = true;
+        EliminadoEn = eliminadoEn;
+    }
 }

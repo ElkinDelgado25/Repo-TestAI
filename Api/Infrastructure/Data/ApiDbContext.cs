@@ -1,10 +1,10 @@
-using Api.Application.Abstractions.Persistence;
 using Api.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Infrastructure.Data;
 
-public sealed class ApiDbContext(DbContextOptions<ApiDbContext> options) : DbContext(options), IApplicationDbContext
+public sealed class ApiDbContext(DbContextOptions<ApiDbContext> options)
+    : DbContext(options)
 {
     public DbSet<Usuario> Usuarios => Set<Usuario>();
 
